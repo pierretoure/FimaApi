@@ -41,8 +41,12 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 // Connect to Mongoose and set connection variable
-const config = require('config-yml');
-mongoose.connect(config.db.uri, { useNewUrlParser: true, useUnifiedTopology: true });
+var dbUri = process.env.FIMA_DB_URI;
+if (!dbUri) {
+	const config = require('config-yml');
+	dbUri = config.db.uri
+}
+mongoose.connect(dbUri, { useNewUrlParser: true, useUnifiedTopology: true });
 var db = mongoose.connection;
 
 // Added check for DB connection
