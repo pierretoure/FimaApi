@@ -1,0 +1,91 @@
+parameters:
+  
+  user_id:
+    name: user_id
+    in: path
+    description: User's id.
+    required: true
+    schema:
+      type: string
+
+  service_id:
+    name: service_id
+    in: path
+    description: Service's id.
+    required: true
+    schema:
+      type: integer
+
+  task_id:
+    name: task_id
+    in: path
+    description: Task's id.
+    required: true
+    schema:
+      type: string
+
+
+
+
+tags:
+
+  - name: Users
+    description: User management
+
+  - name: Services
+    description: Services
+
+  - name: Tasks
+    description: Tasks
+
+
+
+
+definitions:
+
+  User:
+    required:
+      - _id
+      - name
+    properties:
+      _id:
+        type: string
+      name:
+        type: string
+      color:
+        type: string
+      abscences:
+        type: string
+      create_date:
+        type: string
+
+  Abscence:
+    required:
+      - date
+    properties:
+      date:
+        type: string
+        format: date
+      meal:
+        type: string
+        enum: ['LUNCH', 'DINNER']
+        default: 'LUNCH'
+
+  Task:
+    required:
+      - user
+      - service
+      - date
+      - meal
+    properties:
+      user:
+        type: string
+      service:
+        type: string
+      date:
+        type: string
+        format: date
+      meal:
+        type: string
+        enum: ['LUNCH', 'DINNER']
+        default: 'LUNCH'
