@@ -8,7 +8,7 @@ exports.getAll = function (req, res) {
                 message: err,
             });
         }
-        res.json({
+        else res.json({
             status: "success",
             message: "ShopItems retrieved successfully",
             data: shopItems
@@ -23,7 +23,8 @@ exports.new = function (req, res) {
     shopItem.save(function (err) {
         if (err)
             res.send(err);
-		res.json({
+		else res.json({
+			status: 'success',
             message: 'New shopItem created!',
             data: shopItem
         });
@@ -34,7 +35,8 @@ exports.getOne = function (req, res) {
     ShopItem.findById(req.params.shopitem_id, function (err, shopItem) {
         if (err)
             res.send(err);
-        res.json({
+        else res.json({
+			status: 'success',
             message: 'ShopItem details loading..',
             data: shopItem
         });
@@ -45,16 +47,19 @@ exports.update = function (req, res) {
 	ShopItem.findById(req.params.shopitem_id, function (err, shopItem) {
         if (err)
 			res.send(err);
-		if (req.body.title != null) shopItem.title = req.body.title;
-		shopItem.last_update = Date.now();
-        shopItem.save(function (err) {
-            if (err)
-                res.json(err);
-            res.json({
-                message: 'ShopItem Info updated',
-                data: shopItem
-            });
-        });
+		else {
+			if (req.body.title != null) shopItem.title = req.body.title;
+			shopItem.last_update = Date.now();
+			shopItem.save(function (err) {
+				if (err)
+					res.json(err);
+				res.json({
+					status: 'success',
+					message: 'ShopItem Info updated',
+					data: shopItem
+				});
+			});
+		}
     });
 };
 
@@ -64,7 +69,7 @@ exports.delete = function (req, res) {
     }, function (err, shopItem) {
         if (err)
             res.send(err);
-			res.json({
+		else res.json({
             status: "success",
             message: 'ShopItem deleted'
         });

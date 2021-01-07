@@ -87,7 +87,7 @@ exports.getAllTasks = function (req, res) {
 	.exec(function (err, tasks) {
 		if (err)
 			res.send(err);
-		res.json({
+		else res.json({
 			status: 'success',
 			message: "Service's tasks retrieved successfully",
 			data: tasks
@@ -105,7 +105,8 @@ exports.newTask = function (req, res) {
     task.save(function (err) {
         if (err)
             res.send(err);
-		res.json({
+		else res.json({
+			status: 'success',
             message: 'New task created!',
             data: task
         });
@@ -123,6 +124,7 @@ exports.getOneTask = function (req, res) {
 		if (err)
 			res.send(err);
 		res.json({
+			status: 'success',
 			message: 'Task details loading..',
 			data: task
 		});
@@ -181,6 +183,7 @@ exports.getDelegatedUser = function (req, res) {
 					if (err)
 						res.send(err);
 					res.json({
+						status: 'success',
 						message: 'Delegated user loaded',
 						data: user
 					});
@@ -205,7 +208,7 @@ exports.new = function (req, res) {
     user.save(function (err) {
         if (err)
             res.send(err);
-		res.json({
+		else res.json({
             message: 'New user created!',
             data: user
         });
@@ -216,7 +219,7 @@ exports.getOne = function (req, res) {
     User.findById(req.params.user_id, function (err, user) {
         if (err)
             res.send(err);
-        res.json({
+        else res.json({
             message: 'User details loading..',
             data: user
         });
@@ -227,17 +230,19 @@ exports.update = function (req, res) {
 	User.findById(req.params.user_id, function (err, user) {
         if (err)
 			res.send(err);
-		if (req.body.color != null) user.color = req.body.color;
-		if (req.body.absences != null) user.absences = req.body.absences;
-        user.save(function (err) {
-            if (err)
-				res.json(err);
-			else
-				res.json({
-					message: 'User Info updated',
-					data: user
-				});
-        });
+		else {
+			if (req.body.color != null) user.color = req.body.color;
+			if (req.body.absences != null) user.absences = req.body.absences;
+			user.save(function (err) {
+				if (err)
+					res.json(err);
+				else
+					res.json({
+						message: 'User Info updated',
+						data: user
+					});
+			});
+		}
     });
 };
 

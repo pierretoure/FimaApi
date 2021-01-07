@@ -8,7 +8,7 @@ exports.getAll = function (req, res) {
                 message: err,
             });
         }
-        res.json({
+        else res.json({
             status: "success",
             message: "Users retrieved successfully",
             data: users
@@ -24,7 +24,8 @@ exports.new = function (req, res) {
     user.save(function (err) {
         if (err)
             res.send(err);
-		res.json({
+		else res.json({
+			status: 'success',
             message: 'New user created!',
             data: user
         });
@@ -35,7 +36,8 @@ exports.getOne = function (req, res) {
     User.findById(req.params.user_id, function (err, user) {
         if (err)
             res.send(err);
-        res.json({
+        else res.json({
+			status: 'success',
             message: 'User details loading..',
             data: user
         });
@@ -46,17 +48,20 @@ exports.update = function (req, res) {
 	User.findById(req.params.user_id, function (err, user) {
         if (err)
 			res.send(err);
-		if (req.body.color != null) user.color = req.body.color;
-		if (req.body.absences != null) user.absences = req.body.absences;
-        user.save(function (err) {
-            if (err)
-				res.json(err);
-			else
-				res.json({
-					message: 'User Info updated',
-					data: user
-				});
-        });
+		else {
+			user.color = req.body.color ? req.body.color : (user.color ? user.color : "#000000");
+			user.absences = req.body.absences ? req.body.absences : (user.absences ? user.absences : null);
+			user.save(function (err) {
+				if (err)
+					res.json(err);
+				else
+					res.json({
+						status: 'success',
+						message: 'User Info updated',
+						data: user
+					});
+			});
+		}
     });
 };
 
@@ -77,15 +82,18 @@ exports.addAbsence = function (req, res) {
 	User.findById(req.params.user_id, function (err, user) {
         if (err)
 			res.send(err);
-		user.absences = [...user.absences, req.body];
-		user.save(function (err) {
-			if (err)
-				res.json(err);
-			res.json({
-				message: 'Added absence for user',
-				data: user
+		else {
+			user.absences = [...user.absences, req.body];
+			user.save(function (err) {
+				if (err)
+					res.json(err);
+				res.json({
+					status: 'success',
+					message: 'Added absence for user',
+					data: user
+				});
 			});
-		});
+		}
 	});
 };
 
@@ -93,14 +101,17 @@ exports.deleteAbsence = function (req, res) {
 	User.findById(req.params.user_id, function (err, user) {
         if (err)
 			res.send(err);
-		user.absences = user.absences.filter((absence) => !absence._id.equals(req.params.absence_id));
-		user.save(function (err) {
-			if (err)
-				res.json(err);
-			res.json({
-				message: 'Absence deleted for user',
-				data: user
+		else {
+			user.absences = user.absences.filter((absence) => !absence._id.equals(req.params.absence_id));
+			user.save(function (err) {
+				if (err)
+					res.json(err);
+				res.json({
+					status: 'success',
+					message: 'Absence deleted for user',
+					data: user
+				});
 			});
-		});
+		}
 	});
 };

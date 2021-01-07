@@ -13,7 +13,7 @@ exports.getAll = function (req, res) {
 					message: err,
 				});
 			}
-			res.json({
+			else res.json({
 				status: "success",
 				message: "Tasks retrieved successfully",
 				data: tasks
@@ -31,7 +31,8 @@ exports.new = function (req, res) {
     task.save(function (err) {
         if (err)
             res.send(err);
-		res.json({
+		else res.json({
+			status: 'success',
             message: 'New task created!',
             data: task
         });
@@ -44,7 +45,8 @@ exports.getOne = function (req, res) {
 		.exec(function (err, task) {
 			if (err)
 				res.send(err);
-			res.json({
+			else res.json({
+				status: 'success',
 				message: 'Task details loading..',
 				data: task
 			});
@@ -62,7 +64,8 @@ exports.update = function (req, res) {
         task.save(function (err) {
             if (err)
                 res.json(err);
-            res.json({
+            else res.json({
+				status: 'success',
                 message: 'Task Info updated',
                 data: task
             });
@@ -76,7 +79,7 @@ exports.delete = function (req, res) {
     }, function (err, task) {
         if (err)
             res.send(err);
-			res.json({
+		else res.json({
             status: "success",
             message: 'Task deleted'
         });

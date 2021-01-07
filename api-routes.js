@@ -50,16 +50,13 @@ var userController = require('./controllers/userController');
  *     parameters:
  *       - name: name
  *         in: formData
- *         description: User's name.
  *         required: true
  *         type: string
  *       - name: color
  *         in: formData
- *         description: User's color in mobile app.
  *         type: string
  *       - name: abscences
  *         in: formData
- *         description: User's abscences.
  *         type: array
  *         items: 
  *           type: object
@@ -100,6 +97,18 @@ router.route('/users')
  *       - application/json
  *     parameters:
  *       - $ref: '#/parameters/user_id'
+ *       - name: name
+ *         in: formData
+ *         type: string
+ *       - name: color
+ *         in: formData
+ *         type: string
+ *       - name: abscences
+ *         in: formData
+ *         type: array
+ *         items: 
+ *           type: object
+ *           $ref: '#/definitions/Abscence'
  *     responses:
  *       200:
  *         description: success
@@ -114,6 +123,19 @@ router.route('/users')
  *       - application/json
  *     parameters:
  *       - $ref: '#/parameters/user_id'
+ *       - name: name
+ *         in: formData
+ *         required: true
+ *         type: string
+ *       - name: color
+ *         in: formData
+ *         type: string
+ *       - name: abscences
+ *         in: formData
+ *         type: array
+ *         items: 
+ *           type: object
+ *           $ref: '#/definitions/Abscence'
  *     responses:
  *       200:
  *         description: success
@@ -174,6 +196,7 @@ var serviceController = require('./controllers/serviceController');
  *       - application/json
  *     parameters:
  *       - $ref: '#/parameters/service_id'
+ *       - $ref: '#/parameters/user_id_in_body'
  *     responses:
  *       200:
  *         description: success

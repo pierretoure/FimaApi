@@ -3,7 +3,13 @@ parameters:
   user_id:
     name: user_id
     in: path
-    description: User's id.
+    required: true
+    schema:
+      type: string
+  
+  user_id_in_body:
+    name: user_id
+    in: formData
     required: true
     schema:
       type: string
@@ -11,7 +17,6 @@ parameters:
   service_id:
     name: service_id
     in: path
-    description: Service's id.
     required: true
     schema:
       type: integer
@@ -19,7 +24,6 @@ parameters:
   task_id:
     name: task_id
     in: path
-    description: Task's id.
     required: true
     schema:
       type: string
