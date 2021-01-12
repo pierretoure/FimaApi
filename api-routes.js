@@ -1,6 +1,5 @@
 // Initialize express router
 let router = require('express').Router();
-let config = require('config-yml');
 
 /**
  * @swagger
@@ -16,7 +15,7 @@ let config = require('config-yml');
 router.get('/', function (req, res) {
     res.json({
         status: 'success',
-        message: config.app.name + ' is alive!',
+        message: 'FIMA Api is alive!',
     });
 });
 

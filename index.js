@@ -9,6 +9,7 @@ let app = express();
 
 // Setup server port
 var PORT = process.env.PORT || 8080;
+var HOST = process.env.HOST || "localhost";
 
 // Setup swagger
 const swaggerUi = require('swagger-ui-express');
@@ -22,7 +23,7 @@ const options = {
 			title: 'Fima api',
 			version: '1.0.0',
 		},
-		host: `localhost:${PORT}`,
+		host: `${HOST}:${PORT}`,
 	},
 	apis: ['./api-routes.js', './swagger.yml'],
 };
