@@ -197,6 +197,16 @@ var serviceController = require('./controllers/serviceController');
  *     parameters:
  *       - $ref: '#/parameters/service_id'
  *       - $ref: '#/parameters/user_id_in_body'
+ *       - name: date
+ *         in: formData
+ *         schema:
+ *           type: string
+ *           format: date
+ *       - name: meal
+ *         in: formData
+ *         schema:
+ *           type: string
+ *           enum: [LUNCH, DINNER]
  *     responses:
  *       200:
  *         description: success

@@ -78,19 +78,27 @@ User = require('../models/userModel');
 //     });
 // };
 
+function areSameDay(d1, d2) {
+	return d1.getFullYear() === d2.getFullYear() &&
+	  d1.getMonth() === d2.getMonth() &&
+	  d1.getDate() === d2.getDate();
+}
+
 exports.getAllTasks = function (req, res) {
 	Task.find({service: req.params.service_id})
-	.populate({
-		path: 'user',
-		select: 'name'
-	})
+	.populate({path: 'user'})
 	.exec(function (err, tasks) {
 		if (err)
 			res.send(err);
 		else res.json({
 			status: 'success',
 			message: "Service's tasks retrieved successfully",
-			data: tasks
+			data: tasks.sort((_a, _b) => {
+				let a = new Date(_a.date);
+				let b = new Date(_b.date);
+				if (!areSameDay(a, b)) return b.getTime()-a.getTime();
+				return _a.meal === 'DINNER' ? -1 : 1;
+			})
 		});
 	});
 };
@@ -99,9 +107,14 @@ exports.newTask = function (req, res) {
 	var task = new Task();
 	task.user = req.body.user_id;
 	task.service = req.params.service_id;
-	task.meal = new Date().getHours() < 17 
+	task.meal = req.body.meal
+	? req.body.meal
+	: new Date().getHours() < 17 
 		? 'LUNCH' 
 		: 'DINNER';
+	task.date = req.body.date
+	? new Date(req.body.date)
+	: new Date();
     task.save(function (err) {
         if (err)
             res.send(err);
