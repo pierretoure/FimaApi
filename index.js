@@ -10,7 +10,7 @@ let app = express();
 
 // Setup server port
 var PORT = process.env.PORT || 8080;
-var HOST = process.env.HOST || "pierretoure-fimaapi.zeet.app";
+var HOST = process.env.HOST || "fimaapi.herokuapp.com";
 
 // Setup swagger
 const swaggerUi = require('swagger-ui-express');
