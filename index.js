@@ -1,5 +1,6 @@
 // Import express
 let express = require('express');
+
 // Import Body parser
 let bodyParser = require('body-parser');
 // Import Mongoose
@@ -9,7 +10,7 @@ let app = express();
 
 // Setup server port
 var PORT = process.env.PORT || 8080;
-var HOST = process.env.HOST || "localhost";
+var HOST = process.env.HOST || "pierretoure-fimaapi.zeet.app";
 
 // Setup swagger
 const swaggerUi = require('swagger-ui-express');
@@ -23,11 +24,12 @@ const options = {
 			title: 'Fima api',
 			version: '1.0.0',
 		},
-		host: `${HOST}:${PORT}`,
+		host: HOST === 'localhost' || HOST === '0.0.0.0'
+			? `${HOST}:${PORT}`
+			: HOST,
 	},
 	apis: ['./api-routes.js', './swagger.yml'],
 };
-
 
 const swaggerSpecification = swaggerJsdoc(options);
 
