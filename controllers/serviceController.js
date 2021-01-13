@@ -2,82 +2,6 @@ Service = require('../models/serviceModel');
 Task = require('../models/taskModel');
 User = require('../models/userModel');
 
-// exports.getAll = function (req, res) {
-//     Service.get(function (err, services) {
-//         if (err) {
-//             res.json({
-//                 status: "error",
-//                 message: err,
-//             });
-//         }
-//         res.json({
-//             status: "success",
-//             message: "Services retrieved successfully",
-//             data: services
-//         });
-//     });
-// };
-
-// exports.new = function (req, res) {
-//     var service = new Service();
-//     service.title = req.body.title;
-//     service.category = req.body.category;
-//     if (req.body.contributions !== null) service.contributions = req.body.contributions;
-//     if (req.body.delegated_user !== null) service.delegated_user = req.body.delegated_user;
-//     if (req.body.done !== null) service.done = req.body.done;
-//     service.save(function (err) {
-//         if (err)
-//             res.send(err);
-// 		res.json({
-//             message: 'New service created!',
-//             data: service
-//         });
-//     });
-// };
-
-// exports.getOne = function (req, res) {
-//     Service.findById(req.params.service_id, function (err, service) {
-//         if (err)
-//             res.send(err);
-//         res.json({
-//             message: 'Service details loading..',
-//             data: service
-//         });
-//     });
-// };
-
-// Todo: rewrite function
-// exports.update = function (req, res) {
-// 	Service.findById(req.params.service_id, function (err, service) {
-//         if (err)
-//             res.send(err);
-// 		service.users = req.body.users ? req.body.users : service.users;
-// 		service.delegated_user = req.body.delegated_user ? req.body.delegated_user : service.delegated_user;
-// 		service.done = req.body.done !== null ? req.body.done : service.done;
-//         service.save(function (err) {
-//             if (err)
-//                 res.json(err);
-//             res.json({
-//                 message: 'Service Info updated',
-//                 data: service
-//             });
-//         });
-//     });
-// };
-
-// exports.delete = function (req, res) {
-//     Service.deleteOne({
-//         _id: req.params.service_id
-//     }, function (err, service) {
-//         if (err)
-//             res.send(err);
-// 			res.json({
-//             status: "success",
-//             message: 'Service deleted'
-//         });
-//     });
-// };
-
 function areSameDay(d1, d2) {
 	return d1.getFullYear() === d2.getFullYear() &&
 	  d1.getMonth() === d2.getMonth() &&
@@ -164,7 +88,7 @@ exports.updateTask = function (req, res) {
 };
 
 exports.deleteTask = function (req, res) {
-    Task.find({
+    Task.deleteOne({
 		service: req.params.service_id, 
 		_id: req.params.task_id
 	}, function (err, service) {
@@ -172,8 +96,7 @@ exports.deleteTask = function (req, res) {
             res.send(err);
         res.json({
             status: 'success',
-			message: "Task retrieved successfully",
-            data: service
+			message: `Task deleted.`
         });
     });
 };

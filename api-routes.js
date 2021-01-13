@@ -152,9 +152,6 @@ router.route('/users')
  *     responses:
  *       200:
  *         description: success
- *         schema: 
- *           type: object
- *           $ref: '#/definitions/User'
  *     tags: [Users]
  * 
  */
@@ -277,9 +274,6 @@ router.route('/services/:service_id/tasks')
  *     responses:
  *       200:
  *         description: success
- *         schema: 
- *           type: object
- *           $ref: '#/definitions/Task'
  *     tags: [Services]
  */
 router.route('/services/:service_id/tasks/:task_id')
