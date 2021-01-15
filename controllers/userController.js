@@ -1,4 +1,5 @@
 User = require('../models/userModel');
+Absence = require('../models/absenceModel');
 
 exports.getAll = function (req, res) {
     User.get(function (err, users) {
@@ -20,7 +21,6 @@ exports.new = function (req, res) {
     var user = new User();
 	user.name = req.body.name ? req.body.name : user.name;
 	user.color = req.body.color;
-    user.absences = req.body.absences;
     user.save(function (err) {
         if (err)
             res.send(err);
@@ -50,7 +50,6 @@ exports.update = function (req, res) {
 			res.send(err);
 		else {
 			user.color = req.body.color ? req.body.color : (user.color ? user.color : "#000000");
-			user.absences = req.body.absences ? req.body.absences : (user.absences ? user.absences : null);
 			user.save(function (err) {
 				if (err)
 					res.json(err);
@@ -78,40 +77,132 @@ exports.delete = function (req, res) {
     });
 };
 
-exports.addAbsence = function (req, res) {
-	User.findById(req.params.user_id, function (err, user) {
+exports.getAllAbsences = function (req, res) {
+	Absence.find({user: req.params.user_id}, function (err, absences) {
         if (err)
 			res.send(err);
 		else {
-			user.absences = [...user.absences, req.body];
-			user.save(function (err) {
-				if (err)
-					res.json(err);
-				res.json({
-					status: 'success',
-					message: 'Added absence for user',
-					data: user
-				});
+			res.json({
+				status: 'success',
+				message: 'Absences retrieved successfully',
+				data: absences
 			});
 		}
 	});
 };
 
-exports.deleteAbsence = function (req, res) {
-	User.findById(req.params.user_id, function (err, user) {
+exports.getOneAbsence = function (req, res) {
+	Absence.find({
+		_id: req.params.absence_id,
+		user: req.params.user_id
+	}, function (err, absence) {
         if (err)
 			res.send(err);
 		else {
-			user.absences = user.absences.filter((absence) => !absence._id.equals(req.params.absence_id));
-			user.save(function (err) {
-				if (err)
-					res.json(err);
-				res.json({
-					status: 'success',
-					message: 'Absence deleted for user',
-					data: user
-				});
+			res.json({
+				status: 'success',
+				message: 'Absence retrieved successfully',
+				data: absence
 			});
 		}
+	});
+};
+
+exports.newAbsence = function (req, res) {
+    var absence = new Absence();
+	absence.user = req.params.user_id;
+	absence.date = req.body.date;
+	absence.meal = req.body.meal 
+		? req.body.meal 
+		: new Date(date).getHours() < 17 
+			? 'LUNCH' 
+			: 'DINNER';
+    absence.save(function (err) {
+        if (err)
+            res.send(err);
+		else res.json({
+			status: 'success',
+            message: 'New absence created!',
+            data: absence
+        });
+    });
+};
+
+exports.newAbsences = function (req, res) {
+	console.log(req.body);
+	var newAbsences = JSON.parse(req.body.absences).map((_absence) => {
+		var absence = new Absence();
+		absence.user = req.params.user_id;
+		absence.date = _absence.date;
+		absence.meal = _absence.meal
+			? _absence.meal 
+			: new Date(absence.date).getHours() < 17 
+				? 'LUNCH' 
+				: 'DINNER';
+		absence.save(function (err) {
+			if (err)
+				res.send(err);
+			else newAbsences.push(absence);
+		});
+		return absence;
+	});
+	res.json({
+		status: 'success',
+		message: 'Multiple absences created!',
+		data: newAbsences
+	});
+};
+
+exports.updateAbsence = function (req, res) {
+	Absence.find({
+		_id: req.params.absence_id,
+		user: req.params.user_id
+	}, function (err, absence) {
+        if (err)
+			res.send(err);
+		else {
+			absence.date = req.body.date ? req.body.date : absence.date;
+			absence.meal = req.body.meal ? req.body.meal : absence.meal;
+			absence.save(function (err) {
+				if (err)
+					res.json(err);
+				else
+					res.json({
+						status: 'success',
+						message: 'Absence updated',
+						data: absence
+					});
+			});
+		}
+    });
+};
+
+exports.deleteAbsence = function (req, res) {
+	Absence.deleteOne({
+		_id: req.params.absence_id,
+		user: req.params.user_id
+	}, function (err, absence) {
+        if (err)
+			res.send(err);
+		else res.json({
+			status: 'success',
+			message: `Absence deleted.`
+		});
+	});
+};
+
+exports.deleteAbsences = function (req, res) {
+	Absence.deleteMany({
+		_id: {
+			$in: JSON.parse(req.query.absences)
+		},
+		user: req.params.user_id
+	}, function (err, absence) {
+        if (err)
+			res.send(err);
+		else res.json({
+			status: 'success',
+			message: `Absences deleted.`
+		});
 	});
 };

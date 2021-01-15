@@ -47,19 +47,8 @@ var userController = require('./controllers/userController');
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: name
- *         in: formData
- *         required: true
- *         type: string
- *       - name: color
- *         in: formData
- *         type: string
- *       - name: abscences
- *         in: formData
- *         type: array
- *         items: 
- *           type: object
- *           $ref: '#/definitions/Abscence'
+ *       - $ref: '#/parameters/name'
+ *       - $ref: '#/parameters/color'
  *     responses:
  *       200:
  *         description: success
@@ -96,18 +85,8 @@ router.route('/users')
  *       - application/json
  *     parameters:
  *       - $ref: '#/parameters/user_id'
- *       - name: name
- *         in: formData
- *         type: string
- *       - name: color
- *         in: formData
- *         type: string
- *       - name: abscences
- *         in: formData
- *         type: array
- *         items: 
- *           type: object
- *           $ref: '#/definitions/Abscence'
+ *       - $ref: '#/parameters/name'
+ *       - $ref: '#/parameters/color'
  *     responses:
  *       200:
  *         description: success
@@ -122,19 +101,8 @@ router.route('/users')
  *       - application/json
  *     parameters:
  *       - $ref: '#/parameters/user_id'
- *       - name: name
- *         in: formData
- *         required: true
- *         type: string
- *       - name: color
- *         in: formData
- *         type: string
- *       - name: abscences
- *         in: formData
- *         type: array
- *         items: 
- *           type: object
- *           $ref: '#/definitions/Abscence'
+ *       - $ref: '#/parameters/name'
+ *       - $ref: '#/parameters/color'
  *     responses:
  *       200:
  *         description: success
@@ -160,6 +128,278 @@ router.route('/users/:user_id')
     .patch(userController.update)
     .put(userController.update)
 	.delete(userController.delete);
+
+/**
+ * @swagger
+ *
+ * /api/users/{user_id}/absences:
+ * 
+ *   get:
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - $ref: '#/parameters/user_id'
+ *     responses:
+ *       200:
+ *         description: success
+ *         schema: 
+ *           type: array
+ *           items:
+ *             type: object
+ *             $ref: '#/definitions/Absence'
+ *     tags: [Users]
+ * 
+ * 
+ *   post:
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - $ref: '#/parameters/user_id'
+ *       - $ref: '#/parameters/date'
+ *       - $ref: '#/parameters/meal'
+ *     responses:
+ *       200:
+ *         description: success
+ *         schema: 
+ *           type: object
+ *           $ref: '#/definitions/Absence'
+ *     tags: [Users]
+ */
+router.route('/users/:user_id/absences')
+	.get(userController.getAllAbsences)
+	.post(userController.newAbsence);
+
+/**
+ * @swagger
+ *
+ * /api/users/{user_id}/absences-collection:
+ * 
+ *   post:
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - $ref: '#/parameters/user_id'
+ *       - name: absences
+ *         in: formData
+ *         required: true
+ *         type: array
+ *         items:
+ *           type: object
+ *           $ref: '#/definitions/Absence'
+ *     responses:
+ *       200:
+ *         description: success
+ *         schema: 
+ *           type: object
+ *           $ref: '#/definitions/Absence'
+ *     tags: [Users]
+ * 
+ *   delete:
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - $ref: '#/parameters/user_id'
+ *       - $ref: '#/parameters/absences'
+ *     responses:
+ *       200:
+ *         description: success
+ *     tags: [Users]
+ */
+router.route('/users/:user_id/absences-collection')
+	.post(userController.newAbsences)
+	.delete(userController.deleteAbsences);
+
+/**
+ * @swagger
+ *
+ * /api/users/{user_id}/absences/{absence_id}:
+ * 
+ *   get:
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - $ref: '#/parameters/user_id'
+ *       - $ref: '#/parameters/absence_id'
+ *     responses:
+ *       200:
+ *         description: success
+ *         schema: 
+ *           type: object
+ *           $ref: '#/definitions/Absence'
+ *     tags: [Users]
+ * 
+ * 
+ *   patch:
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - $ref: '#/parameters/user_id'
+ *       - $ref: '#/parameters/absence_id'
+ *       - $ref: '#/parameters/date'
+ *       - $ref: '#/parameters/meal'
+ *     responses:
+ *       200:
+ *         description: success
+ *         schema: 
+ *           type: object
+ *           $ref: '#/definitions/User'
+ *     tags: [Users]
+ * 
+ * 
+ *   put:
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - $ref: '#/parameters/user_id'
+ *       - $ref: '#/parameters/absence_id'
+ *       - $ref: '#/parameters/date'
+ *       - $ref: '#/parameters/meal'
+ *       - name: name
+ *         in: formData
+ *         required: true
+ *         type: string
+ *       - name: color
+ *         in: formData
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: success
+ *         schema: 
+ *           type: object
+ *           $ref: '#/definitions/User'
+ *     tags: [Users]
+ * 
+ * 
+ *   delete:
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - $ref: '#/parameters/user_id'
+ *       - $ref: '#/parameters/absence_id'
+ *     responses:
+ *       200:
+ *         description: success
+ *     tags: [Users]
+ * 
+ */
+router.route('/users/:user_id/absences/:absence_id')
+	.get(userController.getOneAbsence)
+	.patch(userController.updateAbsence)
+	.put(userController.updateAbsence)
+	.delete(userController.deleteAbsence);
+
+/**
+ * !! Absences
+ */
+var absenceController = require('./controllers/absenceController');
+
+/**
+ * @swagger
+ *
+ * /api/absences:
+ * 
+ *   get:
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: success
+ *         schema: 
+ *           type: array
+ *           items:
+ *             type: object
+ *             $ref: '#/definitions/Absence'
+ *     tags: [Absences]
+ * 
+ * 
+ *   post:
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - $ref: '#/parameters/user_id_in_body'
+ *       - $ref: '#/parameters/date'
+ *       - $ref: '#/parameters/color'
+ *     responses:
+ *       200:
+ *         description: success
+ *         schema: 
+ *           type: object
+ *           $ref: '#/definitions/Absence'
+ *     tags: [Absences]
+ */
+router.route('/absences')
+	.get(absenceController.getAll)
+	.post(absenceController.new);
+
+/**
+ * @swagger
+ *
+ * /api/absences/{absence_id}:
+ * 
+ *   get:
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - $ref: '#/parameters/absence_id'
+ *     responses:
+ *       200:
+ *         description: success
+ *         schema: 
+ *           type: object
+ *           $ref: '#/definitions/Absence'
+ *     tags: [Absences]
+ * 
+ * 
+ *   patch:
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - $ref: '#/parameters/absence_id'
+ *       - $ref: '#/parameters/user_id_in_body_not_required'
+ *       - $ref: '#/parameters/date'
+ *       - $ref: '#/parameters/meal'
+ *     responses:
+ *       200:
+ *         description: success
+ *         schema: 
+ *           type: object
+ *           $ref: '#/definitions/Absence'
+ *     tags: [Absences]
+ * 
+ * 
+ *   put:
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - $ref: '#/parameters/absence_id'
+ *       - $ref: '#/parameters/user_id_in_body'
+ *       - $ref: '#/parameters/date'
+ *       - $ref: '#/parameters/meal'
+ *     responses:
+ *       200:
+ *         description: success
+ *         schema: 
+ *           type: object
+ *           $ref: '#/definitions/Absence'
+ *     tags: [Absences]
+ * 
+ * 
+ *   delete:
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - $ref: '#/parameters/absence_id'
+ *     responses:
+ *       200:
+ *         description: success
+ *     tags: [Absences]
+ * 
+ */
+router.route('/absences/:absence_id')
+	.get(absenceController.getOne)
+	.patch(absenceController.update)
+	.put(absenceController.update)
+	.delete(absenceController.delete);
 
 /**
  * !! Services
@@ -193,16 +433,8 @@ var serviceController = require('./controllers/serviceController');
  *     parameters:
  *       - $ref: '#/parameters/service_id'
  *       - $ref: '#/parameters/user_id_in_body'
- *       - name: date
- *         in: formData
- *         schema:
- *           type: string
- *           format: date
- *       - name: meal
- *         in: formData
- *         schema:
- *           type: string
- *           enum: [LUNCH, DINNER]
+ *       - $ref: '#/parameters/date'
+ *       - $ref: '#/parameters/meal'
  *     responses:
  *       200:
  *         description: success

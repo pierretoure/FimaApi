@@ -11,10 +11,6 @@ var userSchema = mongoose.Schema({
 		type: String,
 		default: '#cfcfcf'
 	},
-    absences: [{
-		type: mongoose.Schema.Types.ObjectId, 
-		ref: 'Absence'
-	}],
     create_date: {
         type: Date,
         default: Date.now

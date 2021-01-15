@@ -13,6 +13,12 @@ parameters:
     required: true
     schema:
       type: string
+  
+  user_id_in_body_not_required:
+    name: user_id
+    in: formData
+    schema:
+      type: string
 
   service_id:
     name: service_id
@@ -28,6 +34,47 @@ parameters:
     schema:
       type: string
 
+  absence_id:
+    name: absence_id
+    in: path
+    required: true
+    schema:
+      type: string
+
+  absences:
+    name: absences
+    in: query
+    required: true
+    schema:
+      type: string
+
+  
+  date:
+    name: date
+    in: formData  
+    schema:
+      type: string
+      format: date
+
+  meal:
+    name: meal
+    in: formData
+    schema:
+      type: string
+      enum: [LUNCH, DINNER]
+
+  name:
+    name: name
+    in: formData
+    schema: 
+      type: string
+
+  color:
+    name: color
+    in: formData
+    schema:
+      type: string
+
 
 
 
@@ -35,6 +82,9 @@ tags:
 
   - name: Users
     description: User management
+
+  - name: Absences
+    description: User absences
 
   - name: Services
     description: Services
@@ -58,15 +108,17 @@ definitions:
         type: string
       color:
         type: string
-      abscences:
-        type: string
       create_date:
         type: string
+        format: date
 
-  Abscence:
+  Absence:
     required:
       - date
+      - meal
     properties:
+      user:
+        type: string
       date:
         type: string
         format: date
