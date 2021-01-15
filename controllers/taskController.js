@@ -3,31 +3,35 @@ Counter = require('../models/taskModel');
 
 exports.getAll = function (req, res) {
 	Task.find()
-		.populate({
-			path: 'user'
-		})
-		.exec(function (err, tasks) {
-			if (err) {
-				res.json({
-					status: "error",
-					message: err,
-				});
-			}
-			else res.json({
-				status: "success",
-				message: "Tasks retrieved successfully",
-				data: tasks
-			});
+	.populate({path: 'user'})
+	.exec(function (err, tasks) {
+		if (err)
+			res.send(err);
+		else res.json({
+			status: 'success',
+			message: "Tasks retrieved successfully",
+			data: tasks.sort((_a, _b) => {
+				let a = new Date(_a.date);
+				let b = new Date(_b.date);
+				if (!areSameDay(a, b)) return b.getTime()-a.getTime();
+				return _a.meal === 'DINNER' ? -1 : 1;
+			})
 		});
+	});
 };
 
 exports.new = function (req, res) {
 	var task = new Task();
 	task.user = req.body.user_id;
 	task.service = req.body.service_id;
-	task.meal = new Date().getHours() < 17 
+	task.meal = req.body.meal
+	? req.body.meal
+	: new Date().getHours() < 17 
 		? 'LUNCH' 
 		: 'DINNER';
+	task.date = req.body.date
+	? new Date(req.body.date)
+	: new Date();
     task.save(function (err) {
         if (err)
             res.send(err);
@@ -40,17 +44,19 @@ exports.new = function (req, res) {
 };
 
 exports.getOne = function (req, res) {
-	Task.findById(req.params.task_id)
-		.populate('user')
-		.exec(function (err, task) {
-			if (err)
-				res.send(err);
-			else res.json({
-				status: 'success',
-				message: 'Task details loading..',
-				data: task
-			});
+    Task.findById(req.params.task_id)
+	.populate({
+		path: 'user',
+		select: 'name'})
+	.exec(function (err, task) {
+		if (err)
+			res.send(err);
+		res.json({
+			status: 'success',
+			message: 'Task details loading..',
+			data: task
 		});
+	});
 };
 
 // Todo: rewrite function
