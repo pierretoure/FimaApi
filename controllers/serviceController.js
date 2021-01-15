@@ -72,19 +72,21 @@ exports.updateTask = function (req, res) {
     Task.find({
 		service: req.params.service_id, 
 		_id: req.params.task_id
-	})
-	.populate({
-		path: 'user',
-		select: 'name'})
-	.exec(function (err, service) {
-        if (err)
-            res.send(err);
-        res.json({
-            status: 'success',
-			message: "Task retrieved successfully",
-            data: service
-        });
-    });
+	}, function (err, task) {
+		task.user = req.body.user_id ? req.body.user_id : task.user;
+		task.meal = req.body.meal ? req.body.meal : task.meal;
+		task.date = req.body.date ? req.body.date : task.date;
+		task.save(function (err) {
+			if (err)
+				res.json(err);
+			else
+				res.json({
+					status: 'success',
+					message: 'Task Info updated',
+					data: task.populate('user')
+				});
+		});
+	});
 };
 
 exports.deleteTask = function (req, res) {
