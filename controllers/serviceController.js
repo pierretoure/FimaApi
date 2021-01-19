@@ -42,11 +42,17 @@ exports.newTask = function (req, res) {
     task.save(function (err) {
         if (err)
             res.send(err);
-		else res.json({
-			status: 'success',
-            message: 'New task created!',
-            data: task
-        });
+		else Task.populate(task, {
+			path: 'user'
+		}, function(err, task) {
+			if (err)
+				res.send(err)
+			else res.json({
+				status: 'success',
+				message: 'New task created!',
+				data: task
+			});
+		})
     });
 };
 
