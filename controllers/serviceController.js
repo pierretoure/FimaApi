@@ -8,6 +8,106 @@ function areSameDay(d1, d2) {
 	  d1.getDate() === d2.getDate();
 }
 
+
+exports.getAll = function (req, res) {
+	Service.get(function (err, services) {
+        if (err)
+			res.send(err);
+		else {
+			res.json({
+				status: 'success',
+				message: 'Services retrieved successfully',
+				data: services
+			});
+		}
+	});
+};
+
+exports.getOne = function (req, res) {
+	Service.find({category: req.params.service_id}, function (err, service) {
+        if (err)
+			res.send(err);
+		else {
+			res.json({
+				status: 'success',
+				message: 'Service retrieved successfully',
+				data: service
+			});
+		}
+	});
+};
+
+exports.new = function (req, res) {
+	console.log('new service');
+    var service = new Service();
+	service.title = req.body.title;
+	service.category = req.body.category;
+	service.users = req.body.users ? req.body.users : [];
+    service.save(function (err) {
+        if (err)
+            res.send(err);
+		else res.json({
+			status: 'success',
+            message: 'New service created!',
+            data: service
+        });
+    });
+};
+
+exports.update = function (req, res) {
+	Service.findOne({category: req.params.service_id}, function (err, service) {
+        if (err)
+			res.send(err);
+		else {
+			service.title = req.body.title ? req.body.title : service.title;
+			var bodyUsers = JSON.parse(req.body.users);
+			if (bodyUsers != null) {
+				User.find({_id: { "$in" : bodyUsers} }, (err, _users) => {
+					if (err) res.send(err);
+					else {
+						service.users = _users.map((_user) => _user._id);
+						service.save(function (err) {
+							if (err)
+								res.json(err);
+							else
+								res.json({
+									status: 'success',
+									message: 'Service updated',
+									data: service
+								});
+						});	
+					}
+				});
+			} else {
+				service.save(function (err) {
+					if (err)
+						res.json(err);
+					else
+						res.json({
+							status: 'success',
+							message: 'Service updated',
+							data: service
+						});
+				});
+			}
+		}
+    });
+};
+
+exports.delete = function (req, res) {
+	Service.deleteOne({category: req.params.service_id}, function (err, service) {
+        if (err)
+			res.send(err);
+		else res.json({
+			status: 'success',
+			message: `Service deleted.`
+		});
+	});
+};
+
+
+
+
 exports.getAllTasks = function (req, res) {
 	Task.find({service: req.params.service_id})
 	.populate({path: 'user'})
@@ -110,158 +210,67 @@ exports.deleteTask = function (req, res) {
 };
 
 
+areSameMeal = (a, b) => 
+	areSameDay(a.date, b.date) 
+		&& a.meal === b.meal;
+
+
 exports.getDelegatedUser = function (req, res) {
-    Task.aggregate(
-		[
-			{ $match: { service: parseInt(req.params.service_id) }},
-			{ $group: { _id: "$user", count: { $sum: 1 } } },
-			{ $sort: { count: 1, _id: 1 } },
-			{ $unset: "count" },
-			{ $limit: 1 }
-		],
-		function(err, result) {
-			if (err) {
-				res.send(err);
-			} else {
-				User.findById(result[0]['_id'], function (err, user) {
-					if (err)
-						res.send(err);
-					res.json({
-						status: 'success',
-						message: 'Delegated user loaded',
-						data: user
-					});
-				});
-			}
-		}
-	);
-};
-
-
-
-
-
-
-
-
-exports.new = function (req, res) {
-    var user = new User();
-	user.name = req.body.name ? req.body.name : user.name;
-	user.color = req.body.color;
-    user.absences = req.body.absences;
-    user.save(function (err) {
-        if (err)
-            res.send(err);
-		else res.json({
-            message: 'New user created!',
-            data: user
-        });
-    });
-};
-
-exports.getOne = function (req, res) {
-    User.findById(req.params.user_id, function (err, user) {
-        if (err)
-            res.send(err);
-        else res.json({
-            message: 'User details loading..',
-            data: user
-        });
-    });
-};
-
-exports.update = function (req, res) {
-	User.findById(req.params.user_id, function (err, user) {
-        if (err)
-			res.send(err);
+	Service.findOne({category: req.params.service_id}, (err, service) => {
+		if (err) req.send(err);
 		else {
-			if (req.body.color != null) user.color = req.body.color;
-			if (req.body.absences != null) user.absences = req.body.absences;
-			user.save(function (err) {
-				if (err)
-					res.json(err);
-				else
-					res.json({
-						message: 'User Info updated',
-						data: user
+			// set contributions
+			var contributions = service.users.map((_user) => { return {
+				user: _user._id,
+				contribution: 0
+			}});
+
+			Task.find({service: req.params.service_id}, (err, tasks) => {
+				if (err) req.send(err);
+				else {
+					Absence.find({}, (err, _absences) => {
+						if (err) req.send(err);
+						else {
+							var absences = _absences;
+							
+							// for each task, create a userCount
+							tasks.forEach((_task) => {
+								var userCount = contributions.length;
+
+								// for each absences, if correspond to task, add 1 to user absent contribution
+								// remove 1 to userCount and remove absence from all absences
+								absences = absences.filter((_absence) => {
+									if (areSameMeal(_absence, _task)){
+										contributions.find((_c) => _c.user.equals(_absence.user)).contribution += 1;
+										userCount -= 1;
+										return false;
+									}
+									return true;
+								});
+								// add userCount to task user contribution
+								contributions.find((_c) => _c.user.equals(_task.user)).contribution += userCount;
+							});
+							
+							// remove task count to contribution of all users
+							contributions.forEach((_c) => _c.contribution -= tasks.length);
+
+							// sort and filters users to keep the one with lower contribution
+							contributions.sort((a, b) => a.contribution - b.contribution);
+							
+							// Populate and send user
+							User.findById(contributions[0].user, (err, delegedUser) => {
+								if (err) req.send(err);
+								else 
+								res.json({
+									status: 'success',
+									message: `Deleged user retrieved successfully`,
+									data: delegedUser
+								});
+							});
+						}
 					});
-			});
+				}
+			})
 		}
-    });
+	})
 };
-
-exports.delete = function (req, res) {
-    User.deleteOne({
-        _id: req.params.user_id
-    }, function (err, user) {
-        if (err)
-            res.send(err);
-		else res.json({
-			status: "success",
-			message: `User deleted.`
-        });
-    });
-};
-
-
-
-
-
-
-
-
-
-// TODO: rewrite task done
-// exports.addTask = function (req, res) {
-//     Service.findById(req.params.service_id, function (err, service) {
-//         if (err)
-//             res.send(err);
-// 		service.populate('users');
-
-// 		// Get additional user (when table is set, it means every user present excuded the delegated one)
-// 		let additional_users = service.users.filter((user) => 
-// 			(user._id !== req.params.user_id 
-// 			&& !user.absence.some((absence) => 
-// 				absence.date === Date.now 
-// 				&& ((Date.now.getHours() < 17 && absence.meal === 'LUNCH')
-// 					| (Date.now.getHours() >= 17 && absence.meal === 'DINNER')))));
-		
-// 		// Add value of n_additional_users to delegated user counter
-// 		Counter.findOne({user: req.params.user_id}, function (err, user) {
-// 			if (err)
-// 				res.send(err);
-// 			counter.value += additional_users.length;
-// 			counter.save(function (err) {
-// 				if (err)
-// 					res.json(err);
-// 			});
-// 		});
-
-// 		// Remove 1 to present users's counter
-// 		additional_users.forEach((user) => 
-// 			Counter.findOne({user: user._id, service: service._id}, function (err, counter) {
-// 				if (err)
-// 					res.send(err);
-// 				counter.value -= 1;
-// 				counter.save(function (err) {
-// 					if (err)
-// 						res.json(err);
-// 				});
-// 			}));
-		
-// 		// Set new delegated user depends on their counter value
-// 		Counter.get(function (err, counters) {
-// 			if (err)
-// 				res.json(err);
-// 			service.delegated_user = counters.sort((a, b) => a.value - b.value)[0].user;
-// 			service.save(function (err) {
-// 				if (err)
-// 					res.json(err);
-// 				res.json({
-// 					message: 'Task done!',
-// 					data: service
-// 				});
-// 			});
-// 		});
-//     });
-// };

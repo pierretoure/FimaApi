@@ -74,6 +74,34 @@ parameters:
     in: formData
     schema:
       type: string
+  
+  title:
+    name: title
+    in: formData
+    required: true
+    schema:
+      type: string
+  
+  title_not_required:
+    name: title
+    in: formData
+    schema:
+      type: string
+
+  category:
+    name: category
+    in: formData
+    required: true
+    schema:
+      type: integer
+
+  users:
+    name: users
+    in: formData
+    schema:
+      type: array
+      items:
+        type: string
 
 
 
@@ -126,6 +154,21 @@ definitions:
         type: string
         enum: ['LUNCH', 'DINNER']
         default: 'LUNCH'
+
+  Service:
+    required:
+      - title
+      - category
+    properties:
+      title:
+        type: string
+      category:
+        type: integer
+      users:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/Service'
 
   Task:
     required:

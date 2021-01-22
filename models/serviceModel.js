@@ -10,26 +10,11 @@ var serviceSchema = mongoose.Schema({
         type: Number,
         required: true
 	},
-	contributions: [
-		{
-			user: {
-				type: mongoose.Schema.Types.ObjectId,
-				ref: 'User'
-			},
-			counter: {
-				type: Number,
-				default: 0
-			}
-		}
-	],
-	delegated_user: {
+	users: [{
 		type: mongoose.Schema.Types.ObjectId,
-		ref: 'User'
-	},
-	done: {
-		type: Boolean,
-		default: false
-	},
+		ref: 'User',
+		required: false
+	}],
     create_date: {
         type: Date,
         default: Date.now

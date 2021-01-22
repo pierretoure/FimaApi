@@ -409,6 +409,110 @@ var serviceController = require('./controllers/serviceController');
 /**
  * @swagger
  *
+ * /api/services:
+ * 
+ *   get:
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: success
+ *         schema: 
+ *           type: object
+ *           $ref: '#/definitions/Service'
+ *     tags: [Services]
+ * 
+ * 
+ *   post:
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - $ref: '#/parameters/title'
+ *       - $ref: '#/parameters/category'
+ *       - $ref: '#/parameters/users'
+ *     responses:
+ *       200:
+ *         description: success
+ *         schema: 
+ *           type: object
+ *           $ref: '#/definitions/Service'
+ *     tags: [Services]
+ */
+router.route('/services')
+	.get(serviceController.getAll)
+	.post(serviceController.new);
+
+/**
+ * @swagger
+ *
+ * /api/services/{service_id}:
+ * 
+ *   get:
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - $ref: '#/parameters/service_id'
+ *     responses:
+ *       200:
+ *         description: success
+ *         schema: 
+ *           type: object
+ *           $ref: '#/definitions/Service'
+ *     tags: [Services]
+ * 
+ * 
+ *   patch:
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - $ref: '#/parameters/service_id'
+ *       - $ref: '#/parameters/title_not_required'
+ *       - $ref: '#/parameters/users'
+ *     responses:
+ *       200:
+ *         description: success
+ *         schema: 
+ *           type: object
+ *           $ref: '#/definitions/Service'
+ *     tags: [Services]
+ * 
+ * 
+ *   put:
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - $ref: '#/parameters/service_id'
+ *       - $ref: '#/parameters/title_not_required'
+ *       - $ref: '#/parameters/users'
+ *     responses:
+ *       200:
+ *         description: success
+ *         schema: 
+ *           type: object
+ *           $ref: '#/definitions/Service'
+ *     tags: [Services]
+ * 
+ * 
+ *   delete:
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - $ref: '#/parameters/service_id'
+ *     responses:
+ *       200:
+ *         description: success
+ *     tags: [Services]
+ * 
+ */
+router.route('/services/:service_id')
+	.get(serviceController.getOne)
+	.patch(serviceController.update)
+	.put(serviceController.update)
+	.delete(serviceController.delete);
+
+/**
+ * @swagger
+ *
  * /api/services/{service_id}/tasks:
  * 
  *   get:
