@@ -256,9 +256,24 @@ exports.getDelegatedUser = function (req, res) {
 
 							// sort and filters users to keep the one with lower contribution
 							contributions.sort((a, b) => a.contribution - b.contribution);
+
+							// get delegated user (lower contribution and present at this day / meal)
+							var delegatedUser = contributions.find((_c) => {
+								var now = new Absence();
+								now.date = Date.now();
+								now.meal = now.date.getHours() < 17
+									? 'LUNCH'
+									: 'DINNER';
+								if (service.category === 1) return absences.filter((_absence) => _absence.user.equals(_c.user))
+									.every((_absence) => !areSameMeal(now, _absence));
+								else return absences.filter((_absence) => _absence.user.equals(_c.user))
+									.every((_absence) => !areSameDay(now.date, _absence.date));
+							});
+
+							delegatedUser = delegatedUser.user;
 							
 							// Populate and send user
-							User.findById(contributions[0].user, (err, delegedUser) => {
+							User.findById(delegatedUser, (err, delegedUser) => {
 								if (err) req.send(err);
 								else 
 								res.json({
