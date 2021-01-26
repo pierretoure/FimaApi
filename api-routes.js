@@ -308,7 +308,28 @@ var absenceController = require('./controllers/absenceController');
  *           type: array
  *           items:
  *             type: object
- *             $ref: '#/definitions/Absence'
+ *             properties:
+ *               date:
+ *                 type: string
+ *               meal:
+ *                 type: string
+ *                 enum: ['LUNCH', 'DINNER']
+ *                 default: 'LUNCH'
+ *               absences:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                     user:
+ *                       $ref: '#/definitions/User'
+ *                     date:
+ *                       type: string
+ *                     meal:
+ *                       type: string
+ *                       enum: ['LUNCH', 'DINNER']
+ *                       default: 'LUNCH'
  *     tags: [Absences]
  * 
  * 
